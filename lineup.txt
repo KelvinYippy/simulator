@@ -1,21 +1,21 @@
 Manchester United
 
 Lineup:
-GK De_Gea 83
-RB Trippier 83
-CB Kounde 83
-CB Maguire 72
-LB Shaw 78
-DM Rice 83
-DM Van_De_Beek 75
-RM Sancho 86
-AM Fernandes 78
-LM Rashford 74
+GK De Gea 85
+RB Timber 78
+RCB Varane 84
+LCB Maguire 81
+LB Shaw 82
+DM De Jong 86
+DM Fred 82
+RM Antony 81
+AM Fernandes 85
+LM Sancho 84
 ST Ronaldo 89
 
 Corners:
-Trippier
 Fernandes
+Shaw
 
 Free Kick:
 Ronaldo
@@ -32,12 +32,12 @@ RB Cancelo 87
 CB Dias 87
 CB Laporte 84
 LB Zinchenko 80
-DM Rodri 83
-CM De_Bruyne 92
-CM Foden 83
-RW Mahrez 84
-ST Kane 84
-LW Grealish 82
+DM Rodri 85
+CM De Bruyne 92
+CM Bernardo Silva 86
+RW Mahrez 85
+ST Haaland 87
+LW Foden 85
 
 Corners:
 De Bruyne
@@ -48,7 +48,7 @@ De Bruyne
 Mahrez
 
 Penalty:
-Kane
+Haaland
 
 Stadium:
 Old Trafford

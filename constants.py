@@ -12,3 +12,52 @@ scenarios = [
     "Bad pass by the attack... Assist picks it up and threads the ball past the defensive line... Scorer is through one on one, and slots it home past the keeper!",
     f"Player beats his man and is whacked from behind... Scorer fancies this free kick... and he {choice(['bends', 'powers'])} it past the keeper!",
 ]
+
+sofifa_dictionary = {
+    'Manchester United': "https://sofifa.com/team/11/manchester-united/",
+    'Manchester City': "https://sofifa.com/team/10/manchester-city/",
+    'Chelsea': "https://sofifa.com/team/5/chelsea/",
+    'Arsenal': "https://sofifa.com/team/1/arsenal/" 
+}
+
+first_names = [
+    "Toni",
+    "Luka",
+    "Carlos",
+    "David",
+    "Ferland",
+    "Dani",
+    "Thibaut",
+    "Karim",
+    "Federico",
+    "Sadio",
+    "Virgil",
+    "Andrew",
+    "Trent",
+    "Ibrahim",
+    "Jordan",
+    "Thiago",
+    "Mohammed",
+    "Luis"
+]
+
+last_names = [
+    "Kroos",
+    "Modric",
+    "Casemiro",
+    "Alaba",
+    "Mendy",
+    "Carvajal",
+    "Courtois",
+    "Benzema",
+    "Valverde",
+    "Mane",
+    "Van Dijk",
+    "Robertson",
+    "Alexander-Arnold",
+    "Konate",
+    "Henderson",
+    "Alcantara",
+    "Salah",
+    "Diaz"
+]

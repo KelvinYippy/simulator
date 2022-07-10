@@ -11,8 +11,8 @@ class Stadium:
         """Assigns attendance of the game to be a random integer between 10000 times one less the current level and 10000 times the current level."""
         self._attendance = randint((self._level - 1) * 10000, self._level * 10000)
 
-    def get_level(self) -> int:
-        """Getter for the stadium level property of a Stadium object."""
+    @property
+    def level(self):
         return self._level
 
     def __str__(self) -> str:
