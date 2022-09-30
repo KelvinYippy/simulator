@@ -1,0 +1,55 @@
+Manchester United
+
+Lineup:
+GK De Gea 85
+RB Timber 78
+RCB Varane 84
+LCB Maguire 81
+LB Shaw 82
+DM De Jong 86
+DM Fred 82
+RM Antony 81
+AM Fernandes 85
+LM Sancho 84
+ST Ronaldo 89
+
+Corners:
+Fernandes
+Shaw
+
+Free Kick:
+Ronaldo
+Fernandes
+
+Penalty:
+Ronaldo
+
+Manchester City
+
+Lineup:
+GK Ederson 88
+RB Cancelo 87
+CB Dias 87
+CB Laporte 84
+LB Zinchenko 80
+DM Rodri 85
+CM De Bruyne 92
+CM Bernardo Silva 86
+RW Mahrez 85
+ST Haaland 87
+LW Foden 85
+
+Corners:
+De Bruyne
+Mahrez
+
+Free Kick:
+De Bruyne
+Mahrez
+
+Penalty:
+Haaland
+
+Stadium:
+Old Trafford
+10
