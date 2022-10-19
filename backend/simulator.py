@@ -33,7 +33,7 @@ class Simulator():
         venue = Stadium(self.stadium_name, 10)
         match = Match(home_team, away_team, False, venue)
         print(match)
-        return match
+        return match 
 
 class FileSimulator(Simulator):
 
