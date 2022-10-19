@@ -102,6 +102,26 @@ class Match:
                 away_goals -= 1
         self._events = events_array
 
+    @property
+    def events(self):
+        return self._events
+
+    @property 
+    def home_injury(self):
+        return self._home_injury
+
+    @property
+    def away_injury(self):
+        return self._away_injury
+
+    @property
+    def home_goals(self):
+        return self._home_goals
+
+    @property
+    def away_goals(self):
+        return self._away_goals
+
     def _format_event(self, players: list[Player], minute: int, event_number: int, corners: list[str], freekicks: list[str], penalty: str):
         """Fetches desired scenario from the list of available scenarios and replaces content with the players involved. Returns this modified string."""
         def filter_position(player: Player, positions: list[str]):
@@ -110,15 +130,15 @@ class Match:
         if event_number < 2:
             crosser = choice(corners)
             scorer = players[randint(1,10)]
-            while crosser == scorer:
+            while crosser == scorer.name:
                 scorer = players[randint(1,10)]
             amodified = scenario.replace('Assist', crosser)
             smodified = amodified.replace('Scorer', scorer.name)
             return Event(minute, smodified, crosser, scorer)
         elif event_number < 6:
-            passer = [player for player in players if filter_position(player, ['LWB', 'LB', 'RB', 'RWB', 'DM', 'CM', 'LM', 'RM', 'AM'])]
+            passer = [player for player in players if filter_position(player, ['LWB', 'LB', 'RB', 'RWB', 'DM', 'LDM', 'RDM', 'CDM', 'CM', 'LM', 'RM', 'AM', 'LAM', 'RAM'])]
             chosenpasser: Player = choice(passer)
-            scorer = [player for player in players if filter_position(player, ['LW', 'ST', 'RW', 'CF'])]
+            scorer = [player for player in players if filter_position(player, ['LW', 'ST', 'RW', 'CF', 'LS', 'RS'])]
             chosenscorer: Player = choice(scorer)
             amodified = scenario.replace('Assist', chosenpasser.name)
             smodified = amodified.replace('Scorer', chosenscorer.name)
