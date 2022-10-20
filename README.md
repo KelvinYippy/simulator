@@ -13,9 +13,15 @@ pip3 install bs4
 
 These are necessary packages to facilitate the scraper portion of the program.
 
+If you would like to run the React interface, you should make sure to have node package manager installed on your device. Change your directory to the frontend, then run the following command: 
+
+```bash
+npm i
+```
+
 # Running The Program
 
-To start the program, all you need to do is run the following commands:
+To run the program on the command line, all you need to do is run the following commands:
 
 ```bash
 cd backend
@@ -24,11 +30,18 @@ python3 simulator.py
 
 Ensure that you choose teams that are supported by the simulator, otherwise the program will throw a KeyError.
 
+To interact with the program on the React frontend, in addition to running the above command, you should also open a new terminal, then run the following commands:
+
+```bash
+cd frontend
+npm start
+```
+
 # RoadMap
 
-- Building out a React client for users to interact with as opposed to using command-line.
 - Google Sheets support for inputting team information.
 - Ability for users to create leagues and save them in local storage.
+- More team support.
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
