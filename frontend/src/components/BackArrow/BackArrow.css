@@ -1,0 +1,6 @@
+.back-arrow {
+    position: absolute;
+    cursor: pointer;
+    left: 0;
+    margin-left: 1.5rem;
+}

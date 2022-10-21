@@ -1,15 +1,15 @@
 import { Fragment } from "react"
-import { SimulatorEvent, SimulatorScore } from "../LandingPage/LandingPage"
+import { SimulatorEvent, SimulatorScore, SimulatorStatus } from "../LandingPage/LandingPage"
 import { TEAMS } from '../../data'
-import back_arrow from "../../assets/arrow-left.svg"
 import './MatchPage.css'
+import { BackArrow } from "../../components/BackArrow/BackArrow"
 
 interface MatchPageProps {
     goals: SimulatorScore,
     events: SimulatorEvent[],
     home: string,
     away: string,
-    loading: boolean,
+    loading: SimulatorStatus,
     resetMatch?: () => void
 }
 
@@ -18,10 +18,20 @@ export const MatchPage = ({goals, events, home, away, loading, resetMatch}: Matc
     return (
         <div>
             {
-                loading ? 
-                <h1>Waiting for Simulator to Load Results</h1> :
+                loading === SimulatorStatus.Simulating ? 
                 <Fragment>
-                    <img src={back_arrow} alt="Back Arrow" className="back-arrow" onClick={resetMatch}/>
+                    <h1>Waiting for Simulator to Load Results</h1> 
+                    <div className="loading-ring"></div>
+                </Fragment> :
+                loading === SimulatorStatus.Error ? 
+                <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <BackArrow callback={resetMatch}/>
+                    <div className="alert">
+                        An error was encountered while simulating. Please try again!
+                    </div>
+                </div> :
+                <Fragment>
+                    <BackArrow callback={resetMatch}/>
                     <h3>Match Result</h3>
                     <div className="scoreboard">
                         <img src={TEAMS[home]} alt={home} style={{ marginRight: '1rem' }}/>

@@ -8,6 +8,12 @@ export enum Stage {
     Match
 }
 
+export enum SimulatorStatus {
+    Simulating,
+    Error,
+    Finished
+}
+
 type Player = {
     _name: string,
     _position: string,
@@ -37,7 +43,7 @@ export const LandingPage = () => {
         selectedState: Stage.Setup,
         goals: [0, 0] as [number, number],
         events: [] as SimulatorEvent[],
-        loading: true
+        loading: SimulatorStatus.Simulating,
     }
 
     type T = typeof initialLandingPageState
@@ -69,10 +75,11 @@ export const LandingPage = () => {
                     handleMultipleChange({
                         events: request.events,
                         goals: request.goals,
-                        loading: false
+                        loading: SimulatorStatus.Finished
                     })
                 } catch (e) {
                     console.log(e)
+                    handleIndividualChange(SimulatorStatus.Error, "loading")
                 }
             }
         }
