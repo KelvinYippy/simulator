@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import './LandingPage.css'
 import { MatchPage } from '../MatchPage/MatchPage'
 import { SetupPage } from '../SetupPage/SetupPage'
 
@@ -88,7 +87,7 @@ export const LandingPage = () => {
     }, [componentState.selectedState])
 
     return (
-        <div className='landing-page'> 
+        <div> 
             {
                 componentState.selectedState === Stage.Setup && 
                 <SetupPage home={componentState.home} away={componentState.away} handlePropChange={handleIndividualChange}/>

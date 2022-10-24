@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { LandingPage } from "../LandingPage/LandingPage";
 
-const checkIfPresent = (notDefault = false) => {
+const checkPresence = (notDefault = false) => {
     const startElement = screen.queryByText("Simulate")
     if (notDefault) {
         expect(startElement).toBeInTheDocument()
@@ -10,9 +10,16 @@ const checkIfPresent = (notDefault = false) => {
     }
 }
 
+const fireEventHelper = (cards: (HTMLElement | null)[]) => {
+    cards.forEach((card) => {
+        // eslint-disable-next-line testing-library/no-node-access
+        fireEvent.click(card?.parentElement as Element)
+    })
+}
+
 test("no clicking of teams should not render load button", () => {
     render(<LandingPage/>)
-    checkIfPresent()
+    checkPresence()
 })
 
 test("just home team should not render load button", () => {
@@ -20,29 +27,21 @@ test("just home team should not render load button", () => {
     const arsenalCard = screen.queryByText("Arsenal")
     // eslint-disable-next-line testing-library/no-node-access
     fireEvent.click(arsenalCard?.parentElement as Element)
-    checkIfPresent()
+    checkPresence()
 })
 
 test("just away team should not render load button", () => {
     render(<LandingPage/>)
     const arsenalCard = screen.queryByText("Arsenal")
     const chelseaCard = screen.queryByText("Chelsea")
-    // eslint-disable-next-line testing-library/no-node-access
-    fireEvent.click(arsenalCard?.parentElement as Element)
-    // eslint-disable-next-line testing-library/no-node-access
-    fireEvent.click(chelseaCard?.parentElement as Element)
-    // eslint-disable-next-line testing-library/no-node-access
-    fireEvent.click(arsenalCard?.parentElement as Element)
-    checkIfPresent()
+    fireEventHelper([arsenalCard, chelseaCard, arsenalCard])
+    checkPresence()
 })
 
 test("load should render when both teams selected", () => {
     render(<LandingPage/>)
     const arsenalCard = screen.queryByText("Arsenal")
     const chelseaCard = screen.queryByText("Chelsea")
-    // eslint-disable-next-line testing-library/no-node-access
-    fireEvent.click(arsenalCard?.parentElement as Element)
-    // eslint-disable-next-line testing-library/no-node-access
-    fireEvent.click(chelseaCard?.parentElement as Element)
-    checkIfPresent(true)
+    fireEventHelper([arsenalCard, chelseaCard])
+    checkPresence(true)
 })

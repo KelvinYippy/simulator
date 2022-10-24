@@ -1,5 +1,6 @@
 import { TEAMS } from "../../data"
 import { Stage } from "../LandingPage/LandingPage"
+import './SetupPage.scss'
 
 interface MatchPageProps {
     home: string

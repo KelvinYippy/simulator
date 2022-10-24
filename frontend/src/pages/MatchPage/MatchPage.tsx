@@ -1,7 +1,7 @@
 import { Fragment } from "react"
 import { SimulatorEvent, SimulatorScore, SimulatorStatus } from "../LandingPage/LandingPage"
 import { TEAMS } from '../../data'
-import './MatchPage.css'
+import './MatchPage.scss'
 import { BackArrow } from "../../components/BackArrow/BackArrow"
 
 interface MatchPageProps {
