@@ -7,4 +7,6 @@ export const TEAMS: {[key: string]: string} = {
     "Tottenham Hotspur": "https://cdn.sofifa.net/teams/18/120.png",
     "Barcelona": "https://cdn.sofifa.net/teams/241/120.png",
     "Real Madrid": "https://cdn.sofifa.net/teams/243/120.png",
+    "France": "https://cdn.sofifa.net/teams/1335/120.png",
+    "England": "https://cdn.sofifa.net/teams/1318/120.png",
 }

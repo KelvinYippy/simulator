@@ -40,7 +40,7 @@ export const LandingPage = () => {
         home: "",
         away: "",
         selectedState: Stage.Setup,
-        goals: [0, 0] as [number, number],
+        goals: [0, 0] as SimulatorScore,
         events: [] as SimulatorEvent[],
         loading: SimulatorStatus.Simulating,
     }
@@ -76,8 +76,7 @@ export const LandingPage = () => {
                         goals: request.goals,
                         loading: SimulatorStatus.Finished
                     })
-                } catch (e) {
-                    console.log(e)
+                } catch (_) {
                     handleIndividualChange(SimulatorStatus.Error, "loading")
                 }
             }

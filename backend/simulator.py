@@ -89,35 +89,35 @@ class SoFIFASimulator(Simulator):
         names = [starter.find("td", class_="col-name").find("a", role="tooltip").get_text() for starter in starters]
         positions = [starter.find_all("td", class_="col-name")[1].find("span").get_text() for starter in starters]
         ratings = [starter.find("td", class_="col col-oa").get_text() for starter in starters]
-        arr = []
-        for i in range(11):
-            arr.append(f"{positions[i]} {names[i]} {ratings[i]}")
+        arr = [f"{positions[i]} {names[i]} {ratings[i]}" for i in range(11)]
         return arr
 
     def info_helper(self, info):
         """Helper to fetch section of SOFIFA squad that lists non-lineup information."""
         return info.find("ul", class_="pl").find_all("li")
 
+    def get_set_piece_taker(self, info, start: int, end = None):
+        if end and start == end:
+            scraped_taker = self.info_helper(info)[start]
+            return scraped_taker.find("a").get_text()
+        scraped_takers = []
+        if end:
+            scraped_takers = self.info_helper(info)[start:end]
+        else:
+            scraped_takers = self.info_helper(info)[start:]
+        return [taker.find("a").get_text() for taker in scraped_takers]
+        
     def get_corner_takers(self, info):
         """Fetch the corner kick takers for the team."""
-        array = []
-        corner_takers = self.info_helper(info)[-2:]
-        for corner_taker in corner_takers:
-            array.append(corner_taker.find("a").get_text())
-        return array
+        return self.get_set_piece_taker(info, -2)
 
     def get_free_kick_takers(self, info):
         """Fetch the free kick takers for the team."""
-        array = []
-        free_kick_takers = self.info_helper(info)[9:11]
-        for free_kick_taker in free_kick_takers:
-            array.append(free_kick_taker.find("a").get_text())
-        return array
+        return self.get_set_piece_taker(info, 9, 11)
 
     def get_penalty_kick_taker(self, info):
         """Fetch the penalty taker for the team."""
-        penalty_kick_taker = self.info_helper(info)[-3]
-        return penalty_kick_taker.find("a").get_text()
+        return self.get_set_piece_taker(info, -3, -3)
 
     def get_stadium(self, info):
         """Fetch the stadium for the match."""

@@ -22,5 +22,7 @@ sofifa_dictionary = {
     'Liverpool': "https://sofifa.com/team/9/liverpool/",
     'Tottenham Hotspur': "https://sofifa.com/team/18/tottenham-hotspur/",
     'Barcelona': "https://sofifa.com/team/241/fc-barcelona/",
-    'Real Madrid': "https://sofifa.com/team/243/real-madrid-cf/"
+    'Real Madrid': "https://sofifa.com/team/243/real-madrid-cf/",
+    "France": "https://sofifa.com/team/1335/france/",
+    "England": "https://sofifa.com/team/1318/england/"
 }

@@ -6,10 +6,12 @@
 
 .alert {
     background-color: red;
-    border-left: 1rem solid pink;
+    // border-left: 1rem solid pink;
+    // border-right: 1rem solid pink;
     padding: 1rem;
     color: white;
     font-weight: bold;
+    border-radius: 1.5rem;
 }
 
 .loading-ring {

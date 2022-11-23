@@ -19,8 +19,7 @@ class Lineup:
         
     def _format_players(self, players: list[str]) -> None:
         """Set the players of the team as a list of Player Objects."""
-        formatted_players: list[Player] = []
-        for player in players:
+        def format_player(player: Player):
             player_attributes = player.split()
             position = player_attributes.pop(0)
             rating = player_attributes.pop()
@@ -36,7 +35,8 @@ class Lineup:
             else:
                 self._goalies += 1
             self._rating_dictionary[position_type] += rating
-            formatted_players.append(formatted_player)
+            return formatted_player
+        formatted_players: list[Player] = [format_player(player) for player in players]
         self._players = formatted_players
 
     def _calculate_average_rating(self) -> None:
