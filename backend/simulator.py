@@ -46,8 +46,7 @@ class FileSimulator(Simulator):
         arr = []
         with open(self._file, 'r') as f:
             file_lines = f.readlines()
-            for line in file_lines:
-                arr.append(line.rstrip())
+            arr = [line.rstrip() for line in file_lines]
         f.close()
         return arr
 
@@ -74,7 +73,10 @@ class SoFIFASimulator(Simulator):
 
     def scrape_team(self, team):
         """Given team name, scrape from SOFIFA all the necessary players and information about the lineup and set-piece takers."""
-        fetch_html = get(sofifa_dictionary[team]).text
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
+        }
+        fetch_html = get(sofifa_dictionary[team], headers=headers).text
         soup = BeautifulSoup(fetch_html, "html.parser")
         info = soup.find("div", class_="bp3-card player").find("div", class_="card")
         players = soup.find("tbody")
