@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { MatchPage } from '../MatchPage/MatchPage'
 import { SetupPage } from '../SetupPage/SetupPage'
+import { useMultiState } from '../../hooks/useMultiState'
 
 export enum Stage {
     Setup,
@@ -20,6 +21,12 @@ type Player = {
     _age: number
 }
 
+export type Team = {
+    name: string,
+    link: string,
+    logo: string
+}
+
 export type SimulatorEvent = {
     _minute: number,
     _commentary: string,
@@ -37,32 +44,16 @@ type SimulatorResult = {
 export const LandingPage = () => {
 
     const initialLandingPageState = {
-        home: "",
-        away: "",
+        home: null as Team | null,
+        away: null as Team | null,
         selectedState: Stage.Setup,
         goals: [0, 0] as SimulatorScore,
         events: [] as SimulatorEvent[],
         loading: SimulatorStatus.Simulating,
+        teams: {} as Record<string, Team>
     }
 
-    type T = typeof initialLandingPageState
-    type K = keyof T
-
-    const [componentState, setComponentState] = useState(initialLandingPageState)
-
-    const handleIndividualChange = (value: T[K], property: K) => {
-        setComponentState({
-            ...componentState,
-            [property]: value
-        })
-    }
-
-    const handleMultipleChange = (object: Partial<T>) => {
-        setComponentState({
-            ...componentState,
-            ...object
-        })
-    }
+    const { componentState, handleIndividualChange, handleMultipleChange } = useMultiState(initialLandingPageState)
 
     const resetState = () => handleMultipleChange(initialLandingPageState)
 
@@ -70,14 +61,36 @@ export const LandingPage = () => {
         const fetchMatch = async () => {
             if (componentState.selectedState === Stage.Match) {
                 try {
-                    const request: SimulatorResult = await (await fetch(`http://localhost:8000/match/${componentState.home}/${componentState.away}`)).json()
+                    const homeTeam = {
+                        name: componentState.home!.name,
+                        link: componentState.home!.link
+                    }
+                    const awayTeam = {
+                        name: componentState.away!.name,
+                        link: componentState.away!.link
+                    }
+                    const body = {
+                        home_team: homeTeam,
+                        away_team: awayTeam
+                    }
+                    const request: SimulatorResult = await (await fetch(
+                        "http://localhost:8000/match", {
+                            method: 'POST',
+                            headers: {
+                                Accept: 'application.json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(body),
+                            cache: 'default'
+                        }
+                    )).json()
                     handleMultipleChange({
                         events: request.events,
                         goals: request.goals,
                         loading: SimulatorStatus.Finished
                     })
                 } catch (_) {
-                    handleIndividualChange(SimulatorStatus.Error, "loading")
+                    handleIndividualChange("loading", SimulatorStatus.Error)
                 }
             }
         }
@@ -85,14 +98,29 @@ export const LandingPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [componentState.selectedState])
 
+    useEffect(() => {
+        const fetchTeams = async () => {
+            const result: Team[] = await ((await fetch(`http://localhost:8000/teams`)).json())
+            const teams: Record<string, Team> = {}
+            result.forEach((team) => {
+                teams[team.name] = team
+            })
+            handleIndividualChange("teams", teams)
+        }
+        if (componentState.selectedState === Stage.Setup) {
+            fetchTeams()
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [componentState.selectedState])
+
     return (
         <div> 
             {
                 componentState.selectedState === Stage.Setup && 
-                <SetupPage home={componentState.home} away={componentState.away} handlePropChange={handleIndividualChange}/>
+                <SetupPage home={componentState.home} away={componentState.away} teams={componentState.teams} handlePropChange={handleIndividualChange}/>
             }
             {
-                componentState.selectedState === Stage.Match &&
+                componentState.selectedState === Stage.Match && componentState.home && componentState.away &&
                 <MatchPage goals={componentState.goals} events={componentState.events} loading={componentState.loading} home={componentState.home} away={componentState.away} resetMatch={resetState}/>
             }
         </div>

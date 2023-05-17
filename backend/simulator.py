@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from bs4 import BeautifulSoup, Tag
-from requests import get
+from utils import fetch
 from match import Match
 from lineup import Lineup
 from stadium import Stadium
@@ -73,10 +73,7 @@ class SoFIFASimulator(Simulator):
 
     def scrape_team(self, team):
         """Given team name, scrape from SOFIFA all the necessary players and information about the lineup and set-piece takers."""
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
-        }
-        fetch_html = get(sofifa_dictionary[team], headers=headers).text
+        fetch_html = fetch(sofifa_dictionary[team])
         soup = BeautifulSoup(fetch_html, "html.parser")
         info = soup.find("div", class_="bp3-card player").find("div", class_="card")
         players = soup.find("tbody")
@@ -135,6 +132,38 @@ class SoFIFASimulator(Simulator):
         self.home_free_kick_takers = self.get_free_kick_takers(home_team["info"])
         self.home_penalty_taker = self.get_penalty_kick_taker(home_team["info"])
         away_team = self.scrape_team(self.away_name)
+        self.away_lineup = self.get_starters(away_team["players"])
+        self.away_corner_takers = self.get_corner_takers(away_team["info"])
+        self.away_free_kick_takers = self.get_free_kick_takers(away_team["info"])
+        self.away_penalty_taker = self.get_penalty_kick_taker(away_team["info"])
+        self.stadium_name = self.get_stadium(home_team["info"])
+
+class NewSimulator(SoFIFASimulator):
+
+    def __init__(self, home_name: str, away_name: str, home_link: str, away_link: str) -> None:
+        super().__init__(home_name, away_name)
+        self.home_link = f'https://sofifa.com{home_link}'
+        self.away_link = f'https://sofifa.com{away_link}'
+
+    def scrape_team(self, link: str):
+        """Given team name, scrape from SOFIFA all the necessary players and information about the lineup and set-piece takers."""
+        fetch_html = fetch(link)
+        soup = BeautifulSoup(fetch_html, "html.parser")
+        info = soup.find("div", class_="bp3-card player").find("div", class_="card")
+        players = soup.find("tbody")
+        return {
+            "info": info,
+            "players": players
+        }
+    
+    def get_simulator_info(self):
+        """Scrape SOFIFA for the lineups and extraneous information of each team to set up data for the simulator."""
+        home_team = self.scrape_team(self.home_link)
+        self.home_lineup = self.get_starters(home_team["players"])
+        self.home_corner_takers = self.get_corner_takers(home_team["info"])
+        self.home_free_kick_takers = self.get_free_kick_takers(home_team["info"])
+        self.home_penalty_taker = self.get_penalty_kick_taker(home_team["info"])
+        away_team = self.scrape_team(self.away_link)
         self.away_lineup = self.get_starters(away_team["players"])
         self.away_corner_takers = self.get_corner_takers(away_team["info"])
         self.away_free_kick_takers = self.get_free_kick_takers(away_team["info"])

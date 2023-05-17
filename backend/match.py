@@ -34,21 +34,13 @@ class Match:
         home_weight, away_weight = 0, 0
         home_goals, away_goals = 0, 0
         home_rating, away_rating, stadium_level = self._home.rating, self._away.rating, self._stadium.level
-        if self._neutral:
-            home_weight = home_rating / away_rating
-            away_weight = away_rating / home_rating
-        else:
-            home_weight = (home_rating + (stadium_level / 11)) / away_rating
-            away_weight = away_rating / (home_rating + (stadium_level / 11))
-        if home_weight > away_weight:
-            home_goals = home_weight * self._generate_random_factor(True)
-            away_goals = away_weight * self._generate_random_factor(False)
-        elif away_weight > home_weight:
-            home_goals = home_weight * self._generate_random_factor(False)
-            away_goals = away_weight * self._generate_random_factor(True)
-        else:
-            home_goals = home_weight * self._generate_random_factor(False)
-            away_goals = away_weight * self._generate_random_factor(False)
+        weight = 0 if self._neutral else stadium_level / 11
+        home_weight = (home_rating + weight) / away_rating
+        away_weight = away_rating / (home_rating + weight)
+        home_random_factor = True if home_weight > away_weight else False
+        away_random_factor = True if home_weight < away_weight else False
+        home_goals = home_weight * self._generate_random_factor(home_random_factor)
+        away_goals = away_weight * self._generate_random_factor(away_random_factor)
         self._home_goals, self._away_goals = int(home_goals), int(away_goals)
 
     def _calculate_shots(self) -> None:
@@ -126,30 +118,31 @@ class Match:
         """Fetches desired scenario from the list of available scenarios and replaces content with the players involved. Returns this modified string."""
         def filter_position(player: Player, positions: list[str]):
             return player.position in positions
+        def modify_string(scenario: str, player_one: str, player_one_word: str, player_two: str):
+            player_one_modified = scenario.replace(player_one_word, player_one)
+            player_two_modified = player_one_modified.replace("Scorer", player_two)
+            return player_two_modified
         scenario = scenarios[event_number]
         if event_number < 2:
             crosser = choice(corners)
             scorer = players[randint(1,10)]
             while crosser == scorer.name:
                 scorer = players[randint(1,10)]
-            amodified = scenario.replace('Assist', crosser)
-            smodified = amodified.replace('Scorer', scorer.name)
-            return Event(minute, smodified, crosser, scorer)
+            commentary = modify_string(scenario, crosser, "Assist", scorer.name)
+            return Event(minute, commentary, crosser, scorer)
         elif event_number < 6:
             passer = [player for player in players if filter_position(player, ['LWB', 'LB', 'RB', 'RWB', 'DM', 'LDM', 'RDM', 'CDM', 'CM', 'LM', 'RM', 'AM', 'LAM', 'RAM'])]
-            chosenpasser: Player = choice(passer)
+            chosenpasser = choice(passer)
             scorer = [player for player in players if filter_position(player, ['LW', 'ST', 'RW', 'CF', 'LS', 'RS'])]
-            chosenscorer: Player = choice(scorer)
-            amodified = scenario.replace('Assist', chosenpasser.name)
-            smodified = amodified.replace('Scorer', chosenscorer.name)
-            return Event(minute, smodified, chosenpasser, chosenscorer)
+            chosenscorer = choice(scorer)
+            commentary = modify_string(scenario, chosenpasser.name, "Assist", chosenscorer.name)
+            return Event(minute, commentary, chosenpasser, chosenscorer)
         elif event_number < 9:
             player = players[randint(1,10)]
             scorer = freekicks[randint(0,1)] if event_number == 8 else penalty
             player_string = f"{scorer} himself" if player.name == scorer else scorer
-            pmodified = scenario.replace('Player', player.name)
-            smodified = pmodified.replace('Scorer', player_string)
-            return Event(minute, smodified, None if player.name == scorer else player, scorer)
+            commentary = modify_string(scenario, player.name, "Player", player_string)
+            return Event(minute, commentary, None if player.name == scorer else player, scorer)
 
     def __str__(self):
         goals = f"{self._home.team_name} {self._home_goals} - {self._away_goals} {self._away.team_name}"

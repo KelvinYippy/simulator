@@ -1,14 +1,13 @@
 import { Fragment } from "react"
-import { SimulatorEvent, SimulatorScore, SimulatorStatus } from "../LandingPage/LandingPage"
-import { TEAMS } from '../../data'
+import { SimulatorEvent, SimulatorScore, SimulatorStatus, Team } from "../LandingPage/LandingPage"
 import './MatchPage.scss'
 import { BackArrow } from "../../components/BackArrow/BackArrow"
 
 interface MatchPageProps {
     goals: SimulatorScore,
     events: SimulatorEvent[],
-    home: string,
-    away: string,
+    home: Team,
+    away: Team,
     loading: SimulatorStatus,
     resetMatch?: () => void
 }
@@ -34,9 +33,9 @@ export const MatchPage = ({goals, events, home, away, loading, resetMatch}: Matc
                     <BackArrow callback={resetMatch}/>
                     <h3>Match Result</h3>
                     <div className="scoreboard">
-                        <img src={TEAMS[home]} alt={home} style={{ marginRight: '1rem' }}/>
+                        <img src={home.logo} alt={home.name} style={{ marginRight: '1rem' }}/>
                         <strong>{goals[0]} - {goals[1]}</strong>
-                        <img src={TEAMS[away]} alt={away} style={{ marginLeft: '1rem' }}/>
+                        <img src={away.logo} alt={away.name} style={{ marginLeft: '1rem' }}/>
                     </div>
                     <div style={{ marginTop: '1rem' }}>
                         {

@@ -1,55 +1,58 @@
-import { TEAMS } from "../../data"
-import { Stage } from "../LandingPage/LandingPage"
+import { Stage, Team } from "../LandingPage/LandingPage"
 import './SetupPage.scss'
 
 interface MatchPageProps {
-    home: string
-    away: string
-    handlePropChange: (value: string | Stage, property: "home" | "away" | "selectedState") => void
+    home: Team | null
+    away: Team | null
+    teams: Record<string, Team>
+    handlePropChange: (property: "home" | "away" | "selectedState", value: Team | Stage | null) => void
 }
 
-export const SetupPage = ({home, away, handlePropChange}: MatchPageProps) => {
+export const SetupPage = ({home, away, teams, handlePropChange}: MatchPageProps) => {
 
     const handleClassName = (name: string) => {
         let className = "team-card"
-        if (name === home) {
+        if (home && name === home.name) {
             className = `home-${className}`
-        } else if (name === away) {
+        } else if (away && name === away.name) {
             className = `away-${className}`
         }
         return className
     }
     
     const handleChange = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if (home === "" && away !== e.currentTarget.textContent) {
-            handlePropChange(e.currentTarget.textContent as string, "home")
-        } else if (home === e.currentTarget.textContent) {
-            handlePropChange("", "home")
-        } else if (away === "") {
-            handlePropChange(e.currentTarget.textContent as string, "away")
-        } else if (away === e.currentTarget.textContent) {
-            handlePropChange("", "away")
+        const chosenTeam = e.currentTarget.textContent as string
+        if (!home && (!away || away.name !== chosenTeam)) {
+            handlePropChange("home", teams[chosenTeam])
+        } else if (home && home.name === chosenTeam) {
+            handlePropChange("home", null)
+        } else if (!away) {
+            handlePropChange("away", teams[chosenTeam])
+        } else if (away && away.name === chosenTeam) {
+            handlePropChange("away", null)
         }
     }
+
+    const simulateMatch = () => handlePropChange("selectedState", Stage.Match)
 
     return (
         <div> 
             <h3>Soccer Simulator</h3>
             <div className='team-grid'>
                 {
-                    Object.keys(TEAMS).map((team, index) => (
-                        <div key={index} className={handleClassName(team)} onClick={handleChange}>
-                            <img src={TEAMS[team]} alt={team} className="team-image"/>
-                            <b>{team}</b>
+                    Object.keys(teams).map((team, index) => (
+                        <div key={index} className={handleClassName(teams[team].name)} onClick={handleChange}>
+                            <img src={teams[team].logo} alt={teams[team].name} className="team-image"/>
+                            <b>{teams[team].name}</b>
                         </div>
                     ))
                 }
             </div>
             {
-                home !== "" && away !== "" &&
+                home && away &&
                 <div className='start-card'>
-                    <b className='start-text'>{home} Versus {away}</b>
-                    <button className='start-button' onClick={() => handlePropChange(Stage.Match, "selectedState")}>Simulate</button>
+                    <b className='start-text'>{home.name} Versus {away.name}</b>
+                    <button className='start-button' onClick={simulateMatch}>Simulate</button>
                 </div>
             }
         </div>
