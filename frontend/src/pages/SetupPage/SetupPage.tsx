@@ -37,8 +37,10 @@ export const SetupPage = ({home, away, teams, handlePropChange}: MatchPageProps)
 
     return (
         <div> 
-            <h3>Soccer Simulator</h3>
-            <div className='team-grid'>
+            <div style={{ height: '5vh', fontWeight: 'bold', margin: '1rem' }}>
+                Soccer Simulator
+            </div>
+            <div className='team-grid' style={{ height: '70vh', overflow: 'scroll' }}>
                 {
                     Object.keys(teams).map((team, index) => (
                         <div key={index} className={handleClassName(teams[team].name)} onClick={handleChange}>
@@ -48,13 +50,15 @@ export const SetupPage = ({home, away, teams, handlePropChange}: MatchPageProps)
                     ))
                 }
             </div>
-            {
-                home && away &&
-                <div className='start-card'>
-                    <b className='start-text'>{home.name} Versus {away.name}</b>
-                    <button className='start-button' onClick={simulateMatch}>Simulate</button>
-                </div>
-            }
+            <div style={{ height: '25vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {
+                    home && away &&
+                    <div className='start-card'>
+                        <b className='start-text'>{home.name} Versus {away.name}</b>
+                        <button className='start-button' onClick={simulateMatch}>Simulate</button>
+                    </div>
+                }
+            </div>
         </div>
     )
 

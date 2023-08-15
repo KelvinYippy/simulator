@@ -29,26 +29,27 @@ export const MatchPage = ({goals, events, home, away, loading, resetMatch}: Matc
                         An error was encountered while simulating. Please try again!
                     </div>
                 </div> :
-                <Fragment>
+                <div style={{ marginTop: "1rem" }}>
                     <BackArrow callback={resetMatch}/>
-                    <h3>Match Result</h3>
+                    <div style={{ fontSize: "4rem", fontWeight: "700" }}>Match Result</div>
                     <div className="scoreboard">
                         <img src={home.logo} alt={home.name} style={{ marginRight: '1rem' }}/>
-                        <strong>{goals[0]} - {goals[1]}</strong>
+                        <strong style={{ fontSize: "3rem" }}>{goals[0]} - {goals[1]}</strong>
                         <img src={away.logo} alt={away.name} style={{ marginLeft: '1rem' }}/>
                     </div>
                     <div style={{ marginTop: '1rem' }}>
                         {
                             events.map((event, i) => (
-                                <div key={i}>
-                                    {
-                                        <p><b>{event._minute}</b>: {event._commentary}</p>
-                                    }
+                                <div key={i} className={event._is_home ? "home-match-event" : "away-match-event"}>
+                                    <div style={{ width: "20%" }}>
+                                        <img src="https://cdn.sofifa.net/players/212/198/23_90.png" alt="Test Player" className={event._is_home ? "home-player-icon" : "away-player-icon"}/>
+                                    </div>
+                                    <div><b>{event._minute}</b>: {event._commentary}</div>
                                 </div>
                             ))
                         }
                     </div>
-                </Fragment>
+                </div>
             }
         </div>
     )
