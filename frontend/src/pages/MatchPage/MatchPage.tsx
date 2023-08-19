@@ -2,6 +2,8 @@ import { Fragment } from "react"
 import { SimulatorEvent, SimulatorScore, SimulatorStatus, Team } from "../LandingPage/LandingPage"
 import './MatchPage.scss'
 import { BackArrow } from "../../components/BackArrow/BackArrow"
+import { Player } from "../LandingPage/LandingPage"
+import defaultPlayer from '../../assets/player.png'
 
 interface MatchPageProps {
     goals: SimulatorScore,
@@ -42,7 +44,7 @@ export const MatchPage = ({goals, events, home, away, loading, resetMatch}: Matc
                             events.map((event, i) => (
                                 <div key={i} className={event._is_home ? "home-match-event" : "away-match-event"}>
                                     <div style={{ width: "20%" }}>
-                                        <img src="https://cdn.sofifa.net/players/212/198/23_90.png" alt="Test Player" className={event._is_home ? "home-player-icon" : "away-player-icon"}/>
+                                        <img src={(event._scorer as Player)._image ?? defaultPlayer} alt="Scorer" className={event._is_home ? "home-player-icon" : "away-player-icon"}/>
                                     </div>
                                     <div><b>{event._minute}</b>: {event._commentary}</div>
                                 </div>

@@ -1,22 +1,18 @@
+from constants import position_hashmap
+
 class Player:
 
-    def __init__(self, name: str, position: str, rating: str, age: int = None):
+    def __init__(self, name: str, position: str, rating: str, image: str = None, age: int = None):
         self._name = name
         self._position = position
         self._rating = int(rating)
         self._age = age
+        self._image = image
         self._set_position_type(position)
 
     def _set_position_type(self, position: str) -> None:
         """Assigns the position type of a player to one of Goalkeeper, Defender, Midfielder, or Forward."""
-        if 'B' in position:
-            self._position_type = 'D'
-        elif 'M' in position:
-            self._position_type = 'M'
-        elif 'G' in position:
-            self._position_type = 'G'
-        else:
-            self._position_type = 'F'
+        self._position_type = position_hashmap[position]
 
     @property
     def name(self):

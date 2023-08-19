@@ -26,3 +26,31 @@ sofifa_dictionary = {
     "France": "https://sofifa.com/team/1335/france/",
     "England": "https://sofifa.com/team/1318/england/"
 }
+
+position_hashmap = {
+    "GK": "G",
+    "LWB": "D",
+    "LB": "D",
+    "CB": "D",
+    "RCB": "D",
+    "LCB": "D",
+    "RB": "D",
+    "RWB": "D",
+    "LM": "M",
+    "CM": "M",
+    "LCM": "M",
+    "RCM": "M",
+    "CDM": "M",
+    "LDM": "M",
+    "RDM": "M",
+    "RM": "M",
+    "CAM": "M",
+    "LAM": "M",
+    "RAM": "M",
+    "LW": "F",
+    "CF": "F",
+    "LF": "F",
+    "RF": "F",
+    "RW": "F",
+    "ST": "F"
+}

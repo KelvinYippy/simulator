@@ -2,30 +2,26 @@ from player import Player
 
 class Lineup:
 
-    def __init__(self, team_name: str, players: list[str], corner_takers: list[str], free_kick_takers: list[str], penalty_taker: str) -> None:
+    def __init__(self, team_name: str, players: list[Player], corner_takers: list[str], free_kick_takers: list[str], penalty_taker: str, isSoFIFA: bool) -> None:
         self._team_name = team_name
         self._defenders, self._midfielders, self._forwards, self._goalies = 0, 0, 0, 0
+        self._players = players
         self._rating_dictionary = {
             "G": 0,
             "D": 0,
             "M": 0,
             "F": 0
         }
-        self._format_players(players)
+        self._get_lineup_details(players, isSoFIFA)
         self._calculate_average_rating()
         self._corner_takers = corner_takers
         self._free_kick_takers = free_kick_takers
         self._penalty_taker = penalty_taker    
         
-    def _format_players(self, players: list[str]) -> None:
+    def _get_lineup_details(self, players: list[Player], isSoFIFA: bool) -> None:
         """Set the players of the team as a list of Player Objects."""
-        def format_player(player: Player):
-            player_attributes = player.split()
-            position = player_attributes.pop(0)
-            rating = player_attributes.pop()
-            name = " ".join(player_attributes)
-            formatted_player = Player(name, position, rating)
-            position_type, rating = formatted_player.position_type, formatted_player.rating
+        for player in self.players:
+            position_type, rating = player.position_type, player.rating
             if position_type == 'D':
                 self._defenders += 1
             elif position_type == 'M':
@@ -35,9 +31,6 @@ class Lineup:
             else:
                 self._goalies += 1
             self._rating_dictionary[position_type] += rating
-            return formatted_player
-        formatted_players: list[Player] = [format_player(player) for player in players]
-        self._players = formatted_players
 
     def _calculate_average_rating(self) -> None:
         """Calculate the average rating of the team's players."""

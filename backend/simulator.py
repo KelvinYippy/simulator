@@ -5,17 +5,18 @@ from match import Match
 from lineup import Lineup
 from stadium import Stadium
 from constants import sofifa_dictionary
+from player import Player
 
 class Simulator():
 
     def __init__(self, home_name = "", away_name = "") -> None:
         self.home_name: str = home_name
-        self.home_lineup: list[str] = []
+        self.home_lineup: list[Player] = []
         self.home_corner_takers: list[str] = []
         self.home_free_kick_takers: list[str] = []
         self.home_penalty_taker: str = ""
         self.away_name: str = away_name
-        self.away_lineup: list[str] = []
+        self.away_lineup: list[Player] = []
         self.away_corner_takers: list[str] = []
         self.away_free_kick_takers: list[str] = []
         self.away_penalty_taker: str = ""
@@ -28,8 +29,8 @@ class Simulator():
     def run_simulator(self):
         """Run the actual simulator to print out the result of the match."""
         self.get_simulator_info()
-        home_team = Lineup(self.home_name, self.home_lineup, self.home_corner_takers, self.home_free_kick_takers, self.home_penalty_taker)
-        away_team = Lineup(self.away_name, self.away_lineup, self.away_corner_takers, self.away_free_kick_takers, self.away_penalty_taker)
+        home_team = Lineup(self.home_name, self.home_lineup, self.home_corner_takers, self.home_free_kick_takers, self.home_penalty_taker, False)
+        away_team = Lineup(self.away_name, self.away_lineup, self.away_corner_takers, self.away_free_kick_takers, self.away_penalty_taker, False)
         venue = Stadium(self.stadium_name, 10)
         match = Match(home_team, away_team, False, venue)
         print(match)
@@ -52,12 +53,22 @@ class FileSimulator(Simulator):
 
     def get_simulator_info(self):
         """Parse the scanned lineup to get information about lineups, match location, and set-piece takers."""
+        def create_lineup(lineup: list[str]):
+            players = []
+            for player in lineup:
+                player_attributes = player.split()
+                position = player_attributes.pop(0)
+                rating = player_attributes.pop()
+                name = " ".join(player_attributes)
+                formatted_player = Player(name, position, rating)
+                players.append(formatted_player)
+            return players
         lineups = self._scan_lineup()
         home, away = lineups[0:25], lineups[26:51]
         self.home_name = home[0]
         self.away_name = away[0]
-        self.home_lineup = home[3:14]
-        self.away_lineup = away[3:14]
+        self.home_lineup = create_lineup(home[3:14])
+        self.away_lineup = create_lineup(away[3:14])
         self.home_corner_takers = home[16:18]
         self.away_corner_takers = away[16:18]
         self.home_free_kick_takers = home[20:22]
@@ -88,7 +99,10 @@ class SoFIFASimulator(Simulator):
         names = [starter.find("td", class_="col-name").find("a", role="tooltip").get_text() for starter in starters]
         positions = [starter.find_all("td", class_="col-name")[1].find("span").get_text() for starter in starters]
         ratings = [starter.find("td", class_="col col-oa").get_text() for starter in starters]
-        arr = [f"{positions[i]} {names[i]} {ratings[i]}" for i in range(11)]
+        photos = [starter.find("td", class_="col-avatar").find("img")["data-srcset"].split()[2] for starter in starters]
+        test = [starter.find("td", class_="col-avatar") for starter in starters]
+        print(test)
+        arr = [Player(names[i], positions[i], ratings[i], image=photos[i]) for i in range(11)]
         return arr
 
     def info_helper(self, info):

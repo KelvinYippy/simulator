@@ -14,11 +14,12 @@ export enum SimulatorStatus {
     Finished
 }
 
-type Player = {
+export type Player = {
     _name: string,
     _position: string,
     _rating: number,
-    _age: number
+    _age: number,
+    _image: string | null
 }
 
 export type Team = {
