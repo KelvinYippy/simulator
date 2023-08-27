@@ -1,8 +1,7 @@
 import { Fragment } from "react"
-import { SimulatorEvent, SimulatorScore, SimulatorStatus, Team } from "../LandingPage/LandingPage"
+import { SimulatorEvent, SimulatorScore, SimulatorStatus, Team, Player } from "../../types"
 import './MatchPage.scss'
 import { BackArrow } from "../../components/BackArrow/BackArrow"
-import { Player } from "../LandingPage/LandingPage"
 import defaultPlayer from '../../assets/player.png'
 
 interface MatchPageProps {

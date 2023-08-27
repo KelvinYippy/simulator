@@ -10,7 +10,7 @@ def fetch_teams_util(url: str):
         {
             "name": team.find("td", class_="col-name-wide").find_all("div", class_="ellipsis")[0].text,
             "link": team.find("td", class_="col-name-wide").find_all("a")[0]["href"],
-            "logo": team.find("td", class_="col-avatar").find("img")["data-src"].replace("60", "120")
+            "logo": team.find("td", class_="col-avatar").find("img")["data-src"].replace("60.png", "120.png")
         } for team in teams
     ])
     return teams

@@ -2,41 +2,8 @@ import { useEffect } from 'react'
 import { MatchPage } from '../MatchPage/MatchPage'
 import { SetupPage } from '../SetupPage/SetupPage'
 import { useMultiState } from '../../hooks/useMultiState'
-
-export enum Stage {
-    Setup,
-    Match
-}
-
-export enum SimulatorStatus {
-    Simulating,
-    Error,
-    Finished
-}
-
-export type Player = {
-    _name: string,
-    _position: string,
-    _rating: number,
-    _age: number,
-    _image: string | null
-}
-
-export type Team = {
-    name: string,
-    link: string,
-    logo: string
-}
-
-export type SimulatorEvent = {
-    _minute: number,
-    _commentary: string,
-    _scorer: Player | string,
-    _assister: Player | string | null
-    _is_home: boolean
-}
-
-export type SimulatorScore = [number, number]
+import { SimulatorEvent, SimulatorScore, SimulatorStatus, Stage, Team, TeamSearchType } from '../../types'
+import { TeamService } from '../../services/TeamService'
 
 type SimulatorResult = {
     goals: SimulatorScore,
@@ -52,8 +19,12 @@ export const LandingPage = () => {
         goals: [0, 0] as SimulatorScore,
         events: [] as SimulatorEvent[],
         loading: SimulatorStatus.Simulating,
-        teams: {} as Record<string, Team>
+        teams: {} as Record<string, Team>,
+        teamSearchType: TeamSearchType.Trending,
+        teamSearchLoading: false
     }
+
+    const teamService = new TeamService()
 
     const { componentState, handleIndividualChange, handleMultipleChange } = useMultiState(initialLandingPageState)
 
@@ -95,28 +66,46 @@ export const LandingPage = () => {
     }
 
     const fetchTeams = async () => {
-        const result: Team[] = await ((await fetch(`http://localhost:8000/teams`)).json())
+        const fetchLookup: Record<TeamSearchType, () => Promise<Team[]>> = {
+            [TeamSearchType.Trending]: teamService.fetchTrendingTeams,
+            [TeamSearchType.Club]: teamService.fetchClubTeams,
+            [TeamSearchType.National]: teamService.fetchNationalTeams
+        }
+        const result: Team[] = await fetchLookup[componentState.teamSearchType]()
         const teams: Record<string, Team> = {}
         result.forEach((team) => {
             teams[team.name] = team
         })
-        handleIndividualChange("teams", teams)
+        handleMultipleChange({
+            teams: teams,
+            home: null,
+            away: null
+        })
     }
 
     useEffect(() => {
         if (componentState.selectedState === Stage.Match) {
             fetchMatch()
         } else if (componentState.selectedState === Stage.Setup) {
+            handleIndividualChange("teamSearchLoading", true)
             fetchTeams()
+            handleIndividualChange("teamSearchLoading", false)
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [componentState.selectedState])
+    }, [componentState.selectedState, componentState.teamSearchType])
 
     return (
         <div> 
             {
                 componentState.selectedState === Stage.Setup && 
-                <SetupPage home={componentState.home} away={componentState.away} teams={componentState.teams} handlePropChange={handleIndividualChange}/>
+                <SetupPage 
+                    home={componentState.home} 
+                    away={componentState.away} 
+                    teams={componentState.teams} 
+                    handlePropChange={handleIndividualChange}
+                    teamSearchType={componentState.teamSearchType}
+                    teamSearchLoading={componentState.teamSearchLoading}
+                />
             }
             {
                 componentState.selectedState === Stage.Match && componentState.home && componentState.away &&

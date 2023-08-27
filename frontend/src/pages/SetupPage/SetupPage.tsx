@@ -1,14 +1,16 @@
-import { Stage, Team } from "../LandingPage/LandingPage"
+import { Stage, Team, TeamSearchType } from "../../types"
 import './SetupPage.scss'
 
 interface MatchPageProps {
     home: Team | null
     away: Team | null
     teams: Record<string, Team>
-    handlePropChange: (property: "home" | "away" | "selectedState", value: Team | Stage | null) => void
+    handlePropChange: (property: "home" | "away" | "selectedState" | "teamSearchType", value: Team | Stage | TeamSearchType | null) => void,
+    teamSearchType: TeamSearchType
+    teamSearchLoading: boolean
 }
 
-export const SetupPage = ({home, away, teams, handlePropChange}: MatchPageProps) => {
+export const SetupPage = ({home, away, teams, handlePropChange, teamSearchType, teamSearchLoading}: MatchPageProps) => {
 
     const handleClassName = (name: string) => {
         let className = "team-card"
@@ -37,11 +39,24 @@ export const SetupPage = ({home, away, teams, handlePropChange}: MatchPageProps)
 
     return (
         <div> 
-            <div style={{ height: '5vh', fontWeight: 'bold', margin: '1rem' }}>
+            <div style={{ height: '5vh', fontWeight: 'bold', margin: '1rem', fontSize: "3rem" }}>
                 Soccer Simulator
             </div>
-            <div className='team-grid' style={{ height: '70vh', overflow: 'scroll' }}>
+            <div style={{ display: "flex", maxHeight: '10vh' }}>
+                <div className="start-button" data-testid='trending-button' style={{ backgroundColor: teamSearchType === TeamSearchType.Trending ? "#dde4ec" : "inherit" }} onClick={() => handlePropChange("teamSearchType", TeamSearchType.Trending)}>
+                    Trending
+                </div>
+                <div className="start-button" data-testid='club-button' style={{ backgroundColor: teamSearchType === TeamSearchType.Club ? "#dde4ec" : "inherit" }} onClick={() => handlePropChange("teamSearchType", TeamSearchType.Club)}>
+                    Club   
+                </div>
+                <div className="start-button" data-testid='national-button' style={{ backgroundColor: teamSearchType === TeamSearchType.National ? "#dde4ec" : "inherit" }} onClick={() => handlePropChange("teamSearchType", TeamSearchType.National)}>
+                    National
+                </div>
+            </div>
+            <div className='team-grid' style={{ height: '60vh', overflow: 'scroll' }}>
                 {
+                    teamSearchLoading ? 
+                    <div className="loading-ring"></div> :
                     Object.keys(teams).map((team, index) => (
                         <div key={index} className={handleClassName(teams[team].name)} onClick={handleChange}>
                             <img src={teams[team].logo} alt={teams[team].name} className="team-image"/>

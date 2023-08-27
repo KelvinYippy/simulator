@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from simulator import SoFIFASimulator, NewSimulator
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from controllers.team import fetch_trending_teams
+from controllers.team import fetch_trending_teams, fetch_club_teams, fetch_national_teams
 
 app = FastAPI()
 
@@ -47,5 +47,13 @@ async def simulate_sofifa_match(home_team: SimulatorTeamRequest, away_team: Simu
     }
 
 @app.get("/teams")
-async def get_teams():
+async def get_trending_teams():
     return fetch_trending_teams()
+
+@app.get("/clubs")
+async def get_clubs():
+    return fetch_club_teams()
+
+@app.get("/national_teams")
+async def get_national_teams():
+    return fetch_national_teams()

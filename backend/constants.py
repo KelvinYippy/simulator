@@ -52,5 +52,7 @@ position_hashmap = {
     "LF": "F",
     "RF": "F",
     "RW": "F",
-    "ST": "F"
+    "ST": "F",
+    "LS": "F",
+    "RS": "F"
 }

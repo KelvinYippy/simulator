@@ -10,38 +10,32 @@ const checkPresence = (notDefault = false) => {
     }
 }
 
-const fireEventHelper = (cards: (HTMLElement | null)[]) => {
-    cards.forEach((card) => {
-        // eslint-disable-next-line testing-library/no-node-access
-        fireEvent.click(card?.parentElement as Element)
-    })
-}
-
 test("no clicking of teams should not render load button", () => {
     render(<LandingPage/>)
     checkPresence()
 })
 
-test("just home team should not render load button", () => {
+test("initial load should load a greyed-out trending button", () => {
     render(<LandingPage/>)
-    const arsenalCard = screen.queryByText("Arsenal")
-    // eslint-disable-next-line testing-library/no-node-access
-    fireEvent.click(arsenalCard?.parentElement as Element)
-    checkPresence()
+    expect(screen.getByTestId('trending-button')).toHaveStyle('background-color: #dde4ec')
+    expect(screen.getByTestId('club-button')).toHaveStyle('background-color: inherit')
+    expect(screen.getByTestId('national-button')).toHaveStyle('background-color: inherit')
 })
 
-test("just away team should not render load button", () => {
+test("clicking on club button should load a greyed-out club button", () => {
     render(<LandingPage/>)
-    const arsenalCard = screen.queryByText("Arsenal")
-    const chelseaCard = screen.queryByText("Chelsea")
-    fireEventHelper([arsenalCard, chelseaCard, arsenalCard])
-    checkPresence()
+    const clubButton = screen.getByTestId('club-button')
+    fireEvent.click(clubButton)
+    expect(screen.getByTestId('trending-button')).toHaveStyle('background-color: inherit')
+    expect(screen.getByTestId('club-button')).toHaveStyle('background-color: #dde4ec')
+    expect(screen.getByTestId('national-button')).toHaveStyle('background-color: inherit')
 })
 
-test("load should render when both teams selected", () => {
+test("clicking on national button should load a greyed-out nation button", () => {
     render(<LandingPage/>)
-    const arsenalCard = screen.queryByText("Arsenal")
-    const chelseaCard = screen.queryByText("Chelsea")
-    fireEventHelper([arsenalCard, chelseaCard])
-    checkPresence(true)
+    const nationButton = screen.getByTestId('national-button')
+    fireEvent.click(nationButton)
+    expect(screen.getByTestId('trending-button')).toHaveStyle('background-color: inherit')
+    expect(screen.getByTestId('club-button')).toHaveStyle('background-color: inherit')
+    expect(nationButton).toHaveStyle('background-color: #dde4ec')
 })
