@@ -2,7 +2,7 @@ from player import Player
 
 class Lineup:
 
-    def __init__(self, team_name: str, players: list[Player], corner_takers: list[str], free_kick_takers: list[str], penalty_taker: str, isSoFIFA: bool) -> None:
+    def __init__(self, team_name: str, players: list[Player], corner_takers: list[Player], free_kick_takers: list[Player], penalty_taker: Player, isSoFIFA: bool) -> None:
         self._team_name = team_name
         self._defenders, self._midfielders, self._forwards, self._goalies = 0, 0, 0, 0
         self._players = players
@@ -12,13 +12,13 @@ class Lineup:
             "M": 0,
             "F": 0
         }
-        self._get_lineup_details(players, isSoFIFA)
+        self._get_lineup_details()
         self._calculate_average_rating()
         self._corner_takers = corner_takers
         self._free_kick_takers = free_kick_takers
         self._penalty_taker = penalty_taker    
         
-    def _get_lineup_details(self, players: list[Player], isSoFIFA: bool) -> None:
+    def _get_lineup_details(self) -> None:
         """Set the players of the team as a list of Player Objects."""
         for player in self.players:
             position_type, rating = player.position_type, player.rating
@@ -53,15 +53,15 @@ class Lineup:
         return self._players
 
     @property
-    def corner_takers(self) -> list[str]:
+    def corner_takers(self) -> list[Player]:
         return self._corner_takers
 
     @property
-    def free_kick_takers(self) -> list[str]:
+    def free_kick_takers(self) -> list[Player]:
         return self._free_kick_takers
 
     @property
-    def penalty_taker(self) -> str:
+    def penalty_taker(self) -> Player:
         return self._penalty_taker
 
     def get_player(self, number: int) -> Player:

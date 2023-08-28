@@ -4,23 +4,33 @@ from utils import fetch
 from match import Match
 from lineup import Lineup
 from stadium import Stadium
-from constants import sofifa_dictionary
 from player import Player
+from enum import Enum
+
+class TeamType(Enum):
+    HOME = 1,
+    AWAY = 2
 
 class Simulator():
 
     def __init__(self, home_name = "", away_name = "") -> None:
         self.home_name: str = home_name
         self.home_lineup: list[Player] = []
-        self.home_corner_takers: list[str] = []
-        self.home_free_kick_takers: list[str] = []
-        self.home_penalty_taker: str = ""
+        self.home_lineup_map: dict[str, Player] = {}
+        self.home_corner_takers: list[Player] = []
+        self.home_free_kick_takers: list[Player] = []
+        self.home_penalty_taker: Player = ""
         self.away_name: str = away_name
         self.away_lineup: list[Player] = []
-        self.away_corner_takers: list[str] = []
-        self.away_free_kick_takers: list[str] = []
-        self.away_penalty_taker: str = ""
+        self.away_lineup_map: dict[str, Player] = {}
+        self.away_corner_takers: list[Player] = []
+        self.away_free_kick_takers: list[Player] = []
+        self.away_penalty_taker: Player = ""
         self.stadium_name: str = ""
+        self.home_away_map = {
+            TeamType.HOME: self.home_lineup_map,
+            TeamType.AWAY: self.away_lineup_map
+        }
     
     @abstractmethod
     def get_simulator_info(self):
@@ -77,82 +87,7 @@ class FileSimulator(Simulator):
         self.away_penalty_taker = away[24]
         self.stadium_name = lineups[53]
 
-class SoFIFASimulator(Simulator):
-
-    def __init__(self, home_name: str, away_name: str) -> None:
-        super().__init__(home_name.title(), away_name.title())
-
-    def scrape_team(self, team):
-        """Given team name, scrape from SOFIFA all the necessary players and information about the lineup and set-piece takers."""
-        fetch_html = fetch(sofifa_dictionary[team])
-        soup = BeautifulSoup(fetch_html, "html.parser")
-        info = soup.find("div", class_="bp3-card player").find("div", class_="card")
-        players = soup.find("tbody")
-        return {
-            "info": info,
-            "players": players
-        }
-
-    def get_starters(self, players: Tag):
-        """Get the tags referring to the starters from the provided list of player tags."""
-        starters = players.find_all("tr", class_="starting")
-        names = [starter.find("td", class_="col-name").find("a", role="tooltip").get_text() for starter in starters]
-        positions = [starter.find_all("td", class_="col-name")[1].find("span").get_text() for starter in starters]
-        ratings = [starter.find("td", class_="col col-oa").get_text() for starter in starters]
-        photos = [starter.find("td", class_="col-avatar").find("img")["data-srcset"].split()[2] for starter in starters]
-        test = [starter.find("td", class_="col-avatar") for starter in starters]
-        print(test)
-        arr = [Player(names[i], positions[i], ratings[i], image=photos[i]) for i in range(11)]
-        return arr
-
-    def info_helper(self, info):
-        """Helper to fetch section of SOFIFA squad that lists non-lineup information."""
-        return info.find("ul", class_="pl").find_all("li")
-
-    def get_set_piece_taker(self, info, start: int, end = None):
-        if end and start == end:
-            scraped_taker = self.info_helper(info)[start]
-            return scraped_taker.find("a").get_text()
-        scraped_takers = []
-        if end:
-            scraped_takers = self.info_helper(info)[start:end]
-        else:
-            scraped_takers = self.info_helper(info)[start:]
-        return [taker.find("a").get_text() for taker in scraped_takers]
-        
-    def get_corner_takers(self, info):
-        """Fetch the corner kick takers for the team."""
-        return self.get_set_piece_taker(info, -2)
-
-    def get_free_kick_takers(self, info):
-        """Fetch the free kick takers for the team."""
-        return self.get_set_piece_taker(info, 9, 11)
-
-    def get_penalty_kick_taker(self, info):
-        """Fetch the penalty taker for the team."""
-        return self.get_set_piece_taker(info, -3, -3)
-
-    def get_stadium(self, info):
-        """Fetch the stadium for the match."""
-        stadium_name = self.info_helper(info)[0]
-        stadium_name.find("label").decompose()
-        return stadium_name.get_text()
-
-    def get_simulator_info(self):
-        """Scrape SOFIFA for the lineups and extraneous information of each team to set up data for the simulator."""
-        home_team = self.scrape_team(self.home_name)
-        self.home_lineup = self.get_starters(home_team["players"])
-        self.home_corner_takers = self.get_corner_takers(home_team["info"])
-        self.home_free_kick_takers = self.get_free_kick_takers(home_team["info"])
-        self.home_penalty_taker = self.get_penalty_kick_taker(home_team["info"])
-        away_team = self.scrape_team(self.away_name)
-        self.away_lineup = self.get_starters(away_team["players"])
-        self.away_corner_takers = self.get_corner_takers(away_team["info"])
-        self.away_free_kick_takers = self.get_free_kick_takers(away_team["info"])
-        self.away_penalty_taker = self.get_penalty_kick_taker(away_team["info"])
-        self.stadium_name = self.get_stadium(home_team["info"])
-
-class NewSimulator(SoFIFASimulator):
+class NewSimulator(Simulator):
 
     def __init__(self, home_name: str, away_name: str, home_link: str, away_link: str) -> None:
         super().__init__(home_name, away_name)
@@ -170,26 +105,67 @@ class NewSimulator(SoFIFASimulator):
             "players": players
         }
     
+    def get_starters(self, players: Tag):
+        """Get the tags referring to the starters from the provided list of player tags."""
+        starters = players.find_all("tr", class_="starting")
+        result = []
+        result_map = {}
+        for starter in starters:
+            name = starter.find("td", class_="col-name").find("a", role="tooltip").get_text()
+            position = starter.find_all("td", class_="col-name")[1].find("span").get_text()
+            rating = starter.find("td", class_="col col-oa").get_text()
+            photo = starter.find("td", class_="col-avatar").find("img")["data-srcset"].split()[2]
+            player = Player(name, position, rating, image=photo)
+            result.append(player)
+            result_map[name] = player
+        return result, result_map
+    
+    def info_helper(self, info):
+        """Helper to fetch section of SOFIFA squad that lists non-lineup information."""
+        return info.find("ul", class_="pl").find_all("li")
+
+    def get_set_piece_taker(self, info, teamType: TeamType, start: int, end = None):
+        if end and start == end:
+            scraped_taker = self.info_helper(info)[start]
+            return self.home_away_map[teamType][scraped_taker.find("a").get_text()]
+        scraped_takers = []
+        if end:
+            scraped_takers = self.info_helper(info)[start:end]
+        else:
+            scraped_takers = self.info_helper(info)[start:]
+        result = []
+        for taker in scraped_takers:
+            result.append(self.home_away_map[teamType][taker.find("a").get_text()])
+        return result
+        
+    def get_corner_takers(self, info, teamType: TeamType):
+        """Fetch the corner kick takers for the team."""
+        return self.get_set_piece_taker(info, teamType, -2)
+
+    def get_free_kick_takers(self, info, teamType: TeamType):
+        """Fetch the free kick takers for the team."""
+        return self.get_set_piece_taker(info, teamType, 9, 11)
+
+    def get_penalty_kick_taker(self, info, teamType: TeamType):
+        """Fetch the penalty taker for the team."""
+        return self.get_set_piece_taker(info, teamType, -3, -3)
+
+    def get_stadium(self, info):
+        """Fetch the stadium for the match."""
+        stadium_name = self.info_helper(info)[0]
+        stadium_name.find("label").decompose()
+        return stadium_name.get_text()
+    
     def get_simulator_info(self):
         """Scrape SOFIFA for the lineups and extraneous information of each team to set up data for the simulator."""
         home_team = self.scrape_team(self.home_link)
-        self.home_lineup = self.get_starters(home_team["players"])
-        self.home_corner_takers = self.get_corner_takers(home_team["info"])
-        self.home_free_kick_takers = self.get_free_kick_takers(home_team["info"])
-        self.home_penalty_taker = self.get_penalty_kick_taker(home_team["info"])
+        self.home_lineup, self.home_lineup_map = self.get_starters(home_team["players"])
+        self.home_corner_takers = self.get_corner_takers(home_team["info"], TeamType.HOME)
+        self.home_free_kick_takers = self.get_free_kick_takers(home_team["info"], TeamType.HOME)
+        self.home_penalty_taker = self.get_penalty_kick_taker(home_team["info"], TeamType.HOME)
         away_team = self.scrape_team(self.away_link)
-        self.away_lineup = self.get_starters(away_team["players"])
-        self.away_corner_takers = self.get_corner_takers(away_team["info"])
-        self.away_free_kick_takers = self.get_free_kick_takers(away_team["info"])
-        self.away_penalty_taker = self.get_penalty_kick_taker(away_team["info"])
+        self.away_lineup, self.away_lineup_map = self.get_starters(away_team["players"])
+        self.away_corner_takers = self.get_corner_takers(away_team["info"], TeamType.AWAY)
+        self.away_free_kick_takers = self.get_free_kick_takers(away_team["info"], TeamType.AWAY)
+        self.away_penalty_taker = self.get_penalty_kick_taker(away_team["info"], TeamType.AWAY)
         self.stadium_name = self.get_stadium(home_team["info"])
-
-if __name__ == "__main__":
-    try:
-        home_team = input("Choose the home team of this match: ")
-        away_team = input("Choose the away team of this match: ")
-        SoFIFASimulator(home_team, away_team).run_simulator()
-    except KeyError:
-        print("Please only choose a team that is supported by the simulator.")
-    except:
-        print("Please try again later.")

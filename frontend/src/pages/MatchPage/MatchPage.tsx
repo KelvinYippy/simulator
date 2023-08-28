@@ -45,7 +45,7 @@ export const MatchPage = ({goals, events, home, away, loading, resetMatch}: Matc
                                     <div style={{ width: "20%" }}>
                                         <img src={(event._scorer as Player)._image ?? defaultPlayer} alt="Scorer" className={event._is_home ? "home-player-icon" : "away-player-icon"}/>
                                     </div>
-                                    <div><b>{event._minute}</b>: {event._commentary}</div>
+                                    <div style={{ width: "80%" }}><b>{event._minute}</b>: {event._commentary}</div>
                                 </div>
                             ))
                         }

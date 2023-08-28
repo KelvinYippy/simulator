@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from simulator import SoFIFASimulator, NewSimulator
+from simulator import NewSimulator
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from controllers.team import fetch_trending_teams, fetch_club_teams, fetch_national_teams
@@ -28,14 +28,6 @@ class SimulatorTeamRequest(BaseModel):
 async def root():
     return {
         "message": "Welcome to the simulator!"
-    }
-
-@app.get("/match/{home_team}/{away_team}")
-async def simulate_sofifa_match(home_team: str, away_team: str):
-    match = SoFIFASimulator(home_team.replace("%20", " "), away_team.replace("%20", " ")).run_simulator()
-    return {
-        "goals": [match.home_goals, match.away_goals],
-        "events": match._events
     }
 
 @app.post("/match")

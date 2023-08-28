@@ -13,20 +13,7 @@ scenarios = [
     f"Player beats his man and is whacked from behind... Scorer fancies this free kick... and he {choice(['bends', 'powers'])} it past the keeper!",
 ]
 
-# Match team name to corresponding SOFIFA page.
-sofifa_dictionary = {
-    'Manchester United': "https://sofifa.com/team/11/manchester-united/",
-    'Manchester City': "https://sofifa.com/team/10/manchester-city/",
-    'Chelsea': "https://sofifa.com/team/5/chelsea/",
-    'Arsenal': "https://sofifa.com/team/1/arsenal/",
-    'Liverpool': "https://sofifa.com/team/9/liverpool/",
-    'Tottenham Hotspur': "https://sofifa.com/team/18/tottenham-hotspur/",
-    'Barcelona': "https://sofifa.com/team/241/fc-barcelona/",
-    'Real Madrid': "https://sofifa.com/team/243/real-madrid-cf/",
-    "France": "https://sofifa.com/team/1335/france/",
-    "England": "https://sofifa.com/team/1318/england/"
-}
-
+# Hashmap that maps possible SOFIFA position to a more generalized position of "G", "D", "M", "F"
 position_hashmap = {
     "GK": "G",
     "LWB": "D",
