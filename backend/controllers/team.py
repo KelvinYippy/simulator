@@ -6,11 +6,12 @@ def fetch_teams_util(url: str):
     soup = BeautifulSoup(fetch_html, "html.parser")
     team_table = soup.find("table").find("tbody")
     teams = team_table.find_all("tr")
+    print(teams)
     teams = list([
         {
-            "name": team.find("td", class_="col-name-wide").find_all("div", class_="ellipsis")[0].text,
-            "link": team.find("td", class_="col-name-wide").find_all("a")[0]["href"],
-            "logo": team.find("td", class_="col-avatar").find("img")["data-src"].replace("60.png", "120.png")
+            "name": team.find("td", class_="s20").find("a").text,
+            "link": team.find("td", class_="s20").find("a")["href"],
+            "logo": team.find("td", class_="a1").find("img")["data-src"].replace("60.png", "120.png")
         } for team in teams
     ])
     return teams

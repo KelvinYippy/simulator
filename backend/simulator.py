@@ -28,8 +28,8 @@ class Simulator():
         self.away_penalty_taker: Player = ""
         self.stadium_name: str = ""
         self.home_away_map = {
-            TeamType.HOME: self.home_lineup_map,
-            TeamType.AWAY: self.away_lineup_map
+            TeamType.HOME: {},
+            TeamType.AWAY: {}
         }
     
     @abstractmethod
@@ -43,7 +43,6 @@ class Simulator():
         away_team = Lineup(self.away_name, self.away_lineup, self.away_corner_takers, self.away_free_kick_takers, self.away_penalty_taker, False)
         venue = Stadium(self.stadium_name, 10)
         match = Match(home_team, away_team, False, venue)
-        print(match)
         return match 
 
 class FileSimulator(Simulator):
@@ -98,7 +97,7 @@ class NewSimulator(Simulator):
         """Given team name, scrape from SOFIFA all the necessary players and information about the lineup and set-piece takers."""
         fetch_html = fetch(link)
         soup = BeautifulSoup(fetch_html, "html.parser")
-        info = soup.find("div", class_="bp3-card player").find("div", class_="card")
+        info = soup.find("ul", class_="nowrap")
         players = soup.find("tbody")
         return {
             "info": info,
@@ -111,10 +110,10 @@ class NewSimulator(Simulator):
         result = []
         result_map = {}
         for starter in starters:
-            name = starter.find("td", class_="col-name").find("a", role="tooltip").get_text()
-            position = starter.find_all("td", class_="col-name")[1].find("span").get_text()
-            rating = starter.find("td", class_="col col-oa").get_text()
-            photo = starter.find("td", class_="col-avatar").find("img")["data-srcset"].split()[2]
+            name = starter.find_all("td")[1].find("a").get_text()
+            position = starter.find_all("td")[5].find("span").get_text()
+            rating = starter.find("td", {"data-col": "oa"}).find("em").get_text()
+            photo = starter.find("td", class_="a1").find("img")["data-srcset"].split()[2]
             player = Player(name, position, rating, image=photo)
             result.append(player)
             result_map[name] = player
@@ -122,7 +121,7 @@ class NewSimulator(Simulator):
     
     def info_helper(self, info):
         """Helper to fetch section of SOFIFA squad that lists non-lineup information."""
-        return info.find("ul", class_="pl").find_all("li")
+        return info.find_all("li")
 
     def get_set_piece_taker(self, info, teamType: TeamType, start: int, end = None):
         if end and start == end:
@@ -160,11 +159,13 @@ class NewSimulator(Simulator):
         """Scrape SOFIFA for the lineups and extraneous information of each team to set up data for the simulator."""
         home_team = self.scrape_team(self.home_link)
         self.home_lineup, self.home_lineup_map = self.get_starters(home_team["players"])
+        self.home_away_map[TeamType.HOME] = self.home_lineup_map
         self.home_corner_takers = self.get_corner_takers(home_team["info"], TeamType.HOME)
         self.home_free_kick_takers = self.get_free_kick_takers(home_team["info"], TeamType.HOME)
         self.home_penalty_taker = self.get_penalty_kick_taker(home_team["info"], TeamType.HOME)
         away_team = self.scrape_team(self.away_link)
         self.away_lineup, self.away_lineup_map = self.get_starters(away_team["players"])
+        self.home_away_map[TeamType.AWAY] = self.away_lineup_map
         self.away_corner_takers = self.get_corner_takers(away_team["info"], TeamType.AWAY)
         self.away_free_kick_takers = self.get_free_kick_takers(away_team["info"], TeamType.AWAY)
         self.away_penalty_taker = self.get_penalty_kick_taker(away_team["info"], TeamType.AWAY)
